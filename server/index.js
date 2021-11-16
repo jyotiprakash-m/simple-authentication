@@ -22,14 +22,14 @@ app.post("/register", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    db.query("select * from users where username = ? and password = ?", [username, password], (err, result) => {
-        if (result.length > 0) {
+    db.query("select * from users where username = ? and password = ?", [username, password], (error, results, fields) => {
+        if (results.length > 0) {
             res.send({ message: "This user is already present" })
         } else {
             db.query("Insert into users (username,password) values (?,?)",
                 [username, password],
-                (err, result) => {
-                    res.send({ result, login: true, message: "Signup successful" })
+                (error, results, fields) => {
+                    res.send({ results, login: true, message: "Signup successful" })
                     // res.send(result)
 
                 })
@@ -45,17 +45,25 @@ app.post("/login", (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    db.query("select * from users where username = ? and password = ?", [username, password], (err, result) => {
-        if (err) {
-            res.send({ error: err })
+    db.query("select * from users where username = ? and password = ?", [username, password], (error, results, fields) => {
+        if (error) {
+            res.send({ error: error })
         } else {
-            if (result.length > 0) {
-                res.send({ result, login: true, message: "Login successful" })
+            if (results.length > 0) {
+                res.send({ results, login: true, message: "Login successful" })
             } else {
                 res.send({ login: false, message: "Wrong username/password" })
             }
         }
 
+    })
+})
+
+
+app.get("/all", (req, res) => {
+    db.query("select * from users", (error, results, fields) => {
+        res.send(results)
+        // console.log(fields)
     })
 })
 
